@@ -26,7 +26,7 @@ func main() {
 	e.POST("/register", handler.Register)
 
 	r := e.Group("/account")
-	r.Use(middleware.JWTAuthWithConfig(handler.JWTCheck()))
+	r.Use(middleware.JWTConfig(handler.JWTCheck()))
 	r.GET("", handler.TokenResolve)
 	r.POST("/update", handler.Update)
 	r.GET("/info", handler.Get)

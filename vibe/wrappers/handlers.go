@@ -56,8 +56,8 @@ func (h *Handlers) Delete(c echo.Context) error {
 	return nil
 }
 
-func (h *Handlers) JWTCheck() middleware.JWTAuthConfig {
-	return middleware.JWTAuthConfig{
+func (h *Handlers) JWTCheck() middleware.JWTConfig {
+	return middleware.JWTConfig{
 		SigningKey:    []byte(conf.JWT.SigningKey),
 		SigningMethod: conf.JWT.SigningMethod,
 	}

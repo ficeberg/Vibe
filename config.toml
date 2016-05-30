@@ -1,0 +1,46 @@
+Title = "Vibe"
+Build = "beta"
+
+[owner]
+name = "Festum"
+organization = "FEMiUM"
+bio = "FEMiUM.com full powered."
+dob = 1985-12-13T09:32:00Z
+
+[database]
+host = "lo"
+ports = [27214]
+name = "vibe"
+connection_max = 5000
+enabled = true
+	[database.table]
+	user = "user"
+	social = "social"
+
+[servers]
+	[servers.production]
+	ip = "localhost"
+	dc = "eqdc10"
+	port = "8080"
+	[servers.beta]
+	ip = "7.7.7.3"
+	dc = "eqdc10"
+	port = "3000"
+
+[jwt]
+SigningKey    = "SIGNED_KEY"
+SigningMethod = "HS512"
+Bearer        = "Bearer"
+TokenTTL      = 60
+
+[list]
+white = ["google.com"]
+black = [""]
+
+[social]
+	[social.facebook]
+	key = "887001051388939"
+	secret = "SECRET"
+	[social.gplus]
+	key = ""
+	secret = ""

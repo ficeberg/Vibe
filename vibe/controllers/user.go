@@ -3,14 +3,15 @@ package controllers
 import (
 	"../models"
 	"../utils"
-	// "encoding/json"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/fatih/structs"
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"os"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -45,22 +46,39 @@ func (u *User) Get() error {
 	return nil
 }
 
-func (u *User) Update() error {
-	userPrev := User{Username: u.Username}
+func (u *User) Update(username string) error {
+	userPrev := User{Username: username}
 	err := userCrud(&userPrev, "read")
 	if err != nil {
 		return err
 	}
-	u.ID = userPrev.ID
-	u.Email = userPrev.Email
-	u.Username = userPrev.Username
-	u.Password = userPrev.Password
-	u.EncryptedPassword = userPrev.EncryptedPassword
-	u.Salt = userPrev.Salt
-	u.Role = userPrev.Role
+
+	changed := structs.Map(u)
+	changedFields := structs.Names(u)
+	s := reflect.ValueOf(&userPrev).Elem()
+
+	for _, chField := range changedFields {
+		// exported field
+		f := s.FieldByName(chField)
+		if f.IsValid() && f.CanSet() {
+			if fmt.Sprintf("%s", f.Type()) == "int64" {
+				f.SetInt(changed[chField].(int64))
+			}
+			if fmt.Sprintf("%s", f.Type()) == "string" && changed[chField].(string) != "" {
+				f.SetString(changed[chField].(string))
+			}
+		}
+	}
+
 	//TODO: Need to limit what could be updated by role
 
 	err = userCrud(&userPrev, "update")
+	if err != nil {
+		return err
+	}
+
+	u.Username = username
+	err = userCrud(u, "read")
 	if err != nil {
 		return err
 	}
@@ -83,7 +101,6 @@ func (u *User) IsPass(pw string) bool {
 	}
 	//Verify password
 	sa := new(utils.SaltAuth)
-
 	return sa.Check(pw, u.Salt, u.EncryptedPassword)
 }
 
@@ -208,7 +225,6 @@ func userCrud(user *User, action string) error {
 		user.CreatedAt = time.Now()
 		user.UpdatedAt = time.Now()
 		user.LastLogin = time.Now()
-		fmt.Println(user.EncryptedPassword)
 		err = col.Insert(&user)
 		if err != nil {
 			//E11000: conflict
@@ -225,12 +241,18 @@ func userCrud(user *User, action string) error {
 		}
 	case "update":
 		user.UpdatedAt = time.Now()
-		updateData, err := bson.Marshal(&user)
+
+		m := new(utils.Marshal)
+		change, err := m.S2M(user)
 		if err != nil {
 			return err
 		}
-		// change := bson.M{"$set": updateData, "$currentDate": {"updated_at": true}}
-		err = col.Update(colQuerier, updateData)
+
+		//Need to reset non-json fields
+		change["encrypted_password"] = user.EncryptedPassword
+		change["salt"] = user.Salt
+
+		err = col.Update(colQuerier, change)
 		if err != nil {
 			return err
 		}

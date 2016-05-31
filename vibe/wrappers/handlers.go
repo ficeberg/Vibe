@@ -36,7 +36,9 @@ func (h *Handlers) Update(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	if err := u.Update(); err != nil {
+
+	ut := u.ParseToken(c.Get("user"))
+	if err := u.Update(ut["iss"].(string)); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
@@ -68,7 +70,6 @@ func (h *Handlers) Login(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-
 	if !u.IsPass(pw) {
 		return c.NoContent(http.StatusUnauthorized)
 	}
@@ -109,13 +110,9 @@ func getLoginName(c echo.Context) (*controllers.User, string, error) {
 	pw := ""
 	if err := c.Bind(user); err != nil {
 		pw = c.FormValue("password")
-		if c.FormValue("email") != "" {
-			u.Email = c.FormValue("email")
-		}
-		if c.FormValue("username") != "" {
-			u.Username = c.FormValue("username")
-		}
-		if u.Email == "" && u.Username == "" {
+		u.Email = c.FormValue("email")
+		u.Username = c.FormValue("username")
+		if (u.Email == "" && u.Username == "") || pw == "" {
 			return u, pw, err
 		}
 	} else {

@@ -3,6 +3,7 @@ package controllers
 import (
 	"../models"
 	"../utils"
+	b64 "encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -166,6 +167,22 @@ func (u *User) GenerateToken(username, privateKey string, ttl int) (string, erro
 
 func (u *User) ParseToken(ut interface{}) map[string]interface{} {
 	token := ut.(*jwt.Token)
+
+	return token.Claims
+}
+
+func (u *User) GenerateBase64Token(username, privateKey string, ttl int) (string, error) {
+	token, err := u.GenerateToken(username, privateKey, ttl)
+
+	return b64.StdEncoding.EncodeToString([]byte(token)), err
+}
+
+func (u *User) ParseBase64Token(encToken string) map[string]interface{} {
+	ut, err := b64.StdEncoding.DecodeString(encToken)
+	if err != nil {
+		return map[string]interface{}{}
+	}
+	token := interface{}(string(ut)).(*jwt.Token)
 
 	return token.Claims
 }

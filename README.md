@@ -1,34 +1,29 @@
-Gimlet
+Vibe
 ===============
 
-Go-based minimalist rest server backend
+A minimalist RESTful API server based on [Echo server framework](https://echo.labstack.com)
 
 Note
 ----------
-- Developing
-
+- Status: In Developing
 
 Features
 ----------
-* User Auth
-* JWT
-* User CRUD
+* Core Authentication API including User CRUD
+* Token & API Key Management
 
 To Do
 -----------
 
+* User Groups or Roles
 * Access Log
-* Social Integration
-* Role group
-* More extensive api examples
-* Test cases
-* Request pool
+* Social Login Integration
+* More Extensive API Examples
+* Test Cases
+* Request Pool
 
 
-Requirements
------------
 
-* Echo
 
 
 

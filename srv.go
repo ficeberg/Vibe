@@ -34,11 +34,5 @@ func main() {
 	r.PUT("/:id", handler.Update)
 	r.DELETE("", handler.Delete)
 
-	// mux.HandleFunc("/auth/{provider}/callback", func(w http.ResponseWriter, r *http.Request) {
-	// 	auth.Social(w, r)
-	// })
-
-	// mux.HandleFunc("/auth/{provider}", gothic.BeginAuthHandler)
-
 	e.Run(standard.New(":1323"))
 }

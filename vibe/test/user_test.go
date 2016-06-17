@@ -4,11 +4,13 @@ import (
 	"../controllers"
 	"../utils"
 	"errors"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
-func UserCRUD(t *testing.T) {
+func TestUserCRUD(t *testing.T) {
+	assert := assert.New(t)
 	tn := time.Now()
 	birth := tn.AddDate(-30, 0, 0)
 	u := &controllers.User{
@@ -29,20 +31,36 @@ func UserCRUD(t *testing.T) {
 	sa := new(utils.SaltAuth)
 	saerr := errors.New("")
 	u.EncryptedPassword, u.Salt, saerr = sa.Gen(u.Password)
+
 	if saerr != nil {
 		t.Error("Password encryption failed")
 	}
-	if err := u.Create(); err != nil {
-		t.Error("User cannot be created")
+	err := u.Create()
+	if assert.NotNil(err) {
+		if err.Error() != "E11000" {
+			t.Error("User cannot be created: " + err.Error())
+		}
+		u.Delete()
+		u.Create()
+		err = nil
 	}
+
 	u2 := &controllers.User{
 		Email:    u.Email,
 		Username: u.Username,
 	}
 	if err := u2.Get(); err != nil {
-		t.Error("User cannot get user")
+		t.Error("User cannot get user: " + err.Error())
 	}
-	if u.Phone != u2.Phone {
-		t.Error("User profile is inconsistent")
+	assert.Equal(u.Phone, u2.Phone, "User profile is not consistent")
+
+	u.GivenName = "TEST1"
+	if err := u.Update(u.Username); err != nil {
+		t.Error("User cannot be updated: " + err.Error())
 	}
+	u2.Get()
+	assert.Equal(u2.GivenName, "TEST1", "User update failed")
+
+	err = u.Delete()
+	assert.Nil(err)
 }

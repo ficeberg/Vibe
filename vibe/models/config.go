@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
+	"github.com/spf13/viper"
 	"time"
 )
 
@@ -10,7 +10,7 @@ type Config struct {
 	Title   string
 	Build   string
 	Owner   ownerInfo
-	DB      database `toml:"database"`
+	DB      database `mapstructure:"database"`
 	Servers map[string]server
 	JWT     jwt
 	List    list
@@ -19,7 +19,7 @@ type Config struct {
 
 type ownerInfo struct {
 	Name string
-	Org  string `toml:"organization"`
+	Org  string `mapstructure:"organization"`
 	Bio  string
 	DOB  time.Time
 }
@@ -28,7 +28,7 @@ type database struct {
 	Host    string
 	Ports   []int
 	Name    string
-	ConnMax int `toml:"connection_max"`
+	ConnMax int `mapstructure:"connection_max"`
 	Enabled bool
 	Table   map[string]string
 }
@@ -57,9 +57,17 @@ type social struct {
 }
 
 func (c Config) Init() Config {
-	conf := Config{}
-	if _, err := toml.DecodeFile("./config.toml", &conf); err != nil {
-		fmt.Println(err)
+	var vp = viper.New()
+
+	vp.SetConfigName("config")
+	vp.AddConfigPath(".")
+	vp.AddConfigPath("$GOPATH/")
+	vp.SetConfigType("toml")
+	err := vp.ReadInConfig()
+	if err != nil {
+		fmt.Errorf("Fatal error config file: %s \n", err)
 	}
-	return conf
+	vp.Unmarshal(&c)
+
+	return c
 }

@@ -209,6 +209,7 @@ func userCrud(user *User, action string) error {
 	if err != nil {
 		return err
 	}
+
 	mdb.SetMode(mgo.Monotonic, true)
 	defer mdb.Close()
 
@@ -223,7 +224,7 @@ func userCrud(user *User, action string) error {
 		Sparse:     true,
 	})
 	if err != nil {
-		return err
+		return errors.New("Ensure Error: " + err.Error())
 	}
 
 	colQuerier := bson.M{}

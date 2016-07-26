@@ -6,6 +6,7 @@ import (
 	b64 "encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/asaskevich/govalidator"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/fatih/structs"
 	uuid "github.com/satori/go.uuid"
@@ -34,7 +35,29 @@ var (
 func (u *User) Create() error {
 	sa := new(utils.SaltAuth)
 	u.EncryptedPassword, u.Salt, _ = sa.Gen(u.Password)
-	err := userCrud(u, "create")
+	u.CreatedAt, u.UpdatedAt, u.LastLogin = time.Now(), time.Now(), time.Now()
+	u.IsDisabled = false
+	govalidator.TagMap["role"] = govalidator.Validator(func(str string) bool {
+		valid_roles := []string{
+			"admin",
+			"member",
+			"guest",
+			"bot",
+			"api",
+		}
+		for _, r := range valid_roles {
+			if r == str {
+				return true
+			}
+		}
+		return false
+	})
+
+	_, err := govalidator.ValidateStruct(u)
+	if err != nil {
+		return err
+	}
+	err = userCrud(u, "create")
 
 	return err
 }
@@ -47,16 +70,14 @@ func (u *User) Get() error {
 	return nil
 }
 
-func (u *User) Update(username string) error {
-	userPrev := User{Username: username}
-	err := userCrud(&userPrev, "read")
-	if err != nil {
+func (u *User) Update() error {
+	orgUser := User{Username: u.Username}
+	if err := orgUser.Get(); err != nil {
 		return err
 	}
 
-	changed := structs.Map(u)
-	changedFields := structs.Names(u)
-	s := reflect.ValueOf(&userPrev).Elem()
+	changed, changedFields := structs.Map(u), structs.Names(u)
+	s := reflect.ValueOf(&orgUser).Elem()
 
 	for _, chField := range changedFields {
 		// exported field
@@ -68,19 +89,22 @@ func (u *User) Update(username string) error {
 			if fmt.Sprintf("%s", f.Type()) == "string" && changed[chField].(string) != "" {
 				f.SetString(changed[chField].(string))
 			}
+			if fmt.Sprintf("%s", f.Type()) == "bool" {
+				f.SetBool(changed[chField].(bool))
+			}
 		}
 	}
 
-	//TODO: Need to limit what could be updated by role
+	if u.Role != "" && (u.Role != "admin" && u.Role != "member" && u.Role != "guest" && u.Role != "bot" && u.Role != "api") {
+		return errors.New("Role is incorrect")
+	}
 
-	err = userCrud(&userPrev, "update")
+	err := userCrud(&orgUser, "update")
 	if err != nil {
 		return err
 	}
 
-	u.Username = username
-	err = userCrud(u, "read")
-	if err != nil {
+	if err := u.Get(); err != nil {
 		return err
 	}
 
@@ -88,16 +112,14 @@ func (u *User) Update(username string) error {
 }
 
 func (u *User) Delete() error {
-	err := userCrud(u, "delete")
-	if err != nil {
+	if err := userCrud(u, "delete"); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (u *User) IsPass(pw string) bool {
-	err := userCrud(u, "read")
-	if err != nil {
+	if err := u.Get(); err != nil {
 		return false
 	}
 	//Verify password
@@ -110,6 +132,10 @@ func (u *User) IsPass(pw string) bool {
 func (u *User) GenerateToken(username, privateKey string, ttl int) (string, error) {
 	tokenCacheMu.Lock()
 	defer tokenCacheMu.Unlock()
+
+	if err := u.Get(); err != nil { //fetch extra data by key to fullfill token fields
+		return "", err
+	}
 
 	uniqKey := u.Email + username + u.Username // neglect privateKey, its always the same
 	signed, ok := tokenCache[uniqKey]
@@ -239,10 +265,6 @@ func userCrud(user *User, action string) error {
 	user.Password = ""
 	switch action {
 	case "create":
-		user.IsDisabled = false
-		user.CreatedAt = time.Now()
-		user.UpdatedAt = time.Now()
-		user.LastLogin = time.Now()
 		err = col.Insert(&user)
 		if err != nil {
 			//E11000: conflict

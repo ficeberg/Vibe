@@ -38,7 +38,13 @@ func (h *Handlers) Update(c echo.Context) error {
 	}
 
 	ut := u.ParseToken(c.Get("user"))
-	if err := u.Update(ut["iss"].(string)); err != nil {
+	issuer := controllers.User{Username: ut["iss"].(string)}
+
+	if ut["iss"].(string) != u.Username && issuer.Role != "admin" {
+		return c.NoContent(http.StatusUnauthorized)
+	}
+
+	if err := u.Update(); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 

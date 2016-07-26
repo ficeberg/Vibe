@@ -36,7 +36,7 @@ func TestUserCRUD(t *testing.T) {
 		t.Error("Password encryption failed")
 	}
 	err := u.Create()
-	if assert.NotNil(err) {
+	if err != nil {
 		if err.Error() != "E11000" {
 			t.Error("User cannot be created: " + err.Error())
 		}

@@ -11,7 +11,8 @@ type Config struct {
 	Build   string
 	Owner   ownerInfo
 	DB      database `mapstructure:"database"`
-	Servers map[string]server
+	Servers server
+	Logger  logger
 	JWT     jwt
 	List    list
 	Social  map[string]social
@@ -37,6 +38,16 @@ type server struct {
 	IP   string
 	DC   string
 	Port string
+}
+
+type logger struct {
+	Level string
+	Debug string
+	Info  string
+	Error string
+	Warn  string
+	Fatal string
+	Panic string
 }
 
 type jwt struct {

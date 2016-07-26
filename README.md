@@ -11,6 +11,8 @@ Features
 ----------
 * Core Authentication API including User CRUD
 * Token & API Key Management
+* Administration CLI
+* Utilities: Marchal, cryptor, logger and country
 
 To Do
 -----------

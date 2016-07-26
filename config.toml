@@ -27,6 +27,15 @@ enabled = true
 	dc = "eqdc10"
 	port = "3000"
 
+[logger]
+Level = "Debug"
+Debug = "/var/log/vibe/info.log"
+Info = "/var/log/vibe/info.log"
+Error = "/var/log/vibe/eror.log"
+Warn = "/var/log/vibe/eror.log"
+Fatal = "/var/log/vibe/eror.log"
+Panic = "/var/log/vibe/eror.log"
+
 [jwt]
 SigningKey    = "SIGNED_KEY"
 SigningMethod = "HS512"

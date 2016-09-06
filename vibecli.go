@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./vibe/controllers"
-	"./vibe/models"
+	"./controllers"
+	"./models"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/structs"

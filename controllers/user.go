@@ -160,14 +160,15 @@ func (u *User) GenerateToken(username, privateKey string, ttl int) (string, erro
 	leeway := TokenLeeway
 
 	tkn := jwt.New(jwt.GetSigningMethod(conf.JWT.SigningMethod))
-	tkn.Claims["iss"] = u.Username                                                  // Issuer
-	tkn.Claims["sub"] = username                                                    // Subject
-	tkn.Claims["aud"] = u.Email                                                     // Audience
-	tkn.Claims["exp"] = time.Now().UTC().Add(time.Duration(ttl)).Add(leeway).Unix() // Expiration Time
-	tkn.Claims["nbf"] = time.Now().UTC().Add(-leeway).Unix()                        // Not Before
-	tkn.Claims["iat"] = time.Now().UTC().Unix()                                     // Issued At
-	tkn.Claims["jti"] = tknID.String()                                              // JWT ID
-	tkn.Claims["role"] = u.Role
+	claims := tkn.Claims.(jwt.MapClaims)
+	claims["iss"] = u.Username                                                  // Issuer
+	claims["sub"] = username                                                    // Subject
+	claims["aud"] = u.Email                                                     // Audience
+	claims["exp"] = time.Now().UTC().Add(time.Duration(ttl)).Add(leeway).Unix() // Expiration Time
+	claims["nbf"] = time.Now().UTC().Add(-leeway).Unix()                        // Not Before
+	claims["iat"] = time.Now().UTC().Unix()                                     // Issued At
+	claims["jti"] = tknID.String()                                              // JWT ID
+	claims["role"] = u.Role
 
 	var err error
 	signed, err = tkn.SignedString([]byte(privateKey))
@@ -194,7 +195,7 @@ func (u *User) GenerateToken(username, privateKey string, ttl int) (string, erro
 func (u *User) ParseToken(ut interface{}) map[string]interface{} {
 	token := ut.(*jwt.Token)
 
-	return token.Claims
+	return token.Claims.(jwt.MapClaims)
 }
 
 func (u *User) GenerateBase64Token(username, privateKey string, ttl int) (string, error) {
@@ -210,7 +211,7 @@ func (u *User) ParseBase64Token(encToken string) map[string]interface{} {
 	}
 	token := interface{}(string(ut)).(*jwt.Token)
 
-	return token.Claims
+	return token.Claims.(jwt.MapClaims)
 }
 
 type mongoConnectionDetails struct {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./controllers"
-	"./models"
+	"../controllers"
+	"../models"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/structs"

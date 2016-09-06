@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./vibe/wrappers"
+	"../wrappers"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
@@ -20,9 +20,7 @@ func main() {
 	handler := new(wrappers.Handlers)
 
 	e.GET("/auth/:id", handler.Check)
-
 	e.POST("/login", handler.Login)
-	e.GET("/", handler.Accessible)
 	e.POST("/register", handler.Register)
 
 	r := e.Group("/account")

@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"../models"
-	"../utils"
 	b64 "encoding/base64"
 	"errors"
 	"fmt"
@@ -10,6 +8,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/fatih/structs"
 	uuid "github.com/satori/go.uuid"
+	"gitlab.com/Festum/Vibe/models"
+	"gitlab.com/Festum/Vibe/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"os"

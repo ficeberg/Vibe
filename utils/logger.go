@@ -1,10 +1,10 @@
 package utils
 
 import (
-	"../models"
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/rifflock/lfshook"
+	"gitlab.com/Festum/Vibe/models"
 	"os"
 	"strings"
 )

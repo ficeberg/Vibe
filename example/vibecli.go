@@ -1,12 +1,12 @@
 package main
 
 import (
-	"../controllers"
-	"../models"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/urfave/cli"
+	"gitlab.com/Festum/Vibe/controllers"
+	"gitlab.com/Festum/Vibe/models"
 	"os"
 	"strings"
 )

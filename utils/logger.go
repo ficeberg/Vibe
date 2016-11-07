@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Sirupsen/logrus"
 	"github.com/rifflock/lfshook"
-	"gitlab.com/Festum/Vibe/models"
+	"github.com/Festum/Vibe/models"
 	"os"
 	"strings"
 )

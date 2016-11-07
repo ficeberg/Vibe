@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/urfave/cli"
-	"gitlab.com/Festum/Vibe/controllers"
-	"gitlab.com/Festum/Vibe/models"
+	"github.com/Festum/Vibe/controllers"
+	"github.com/Festum/Vibe/models"
 	"os"
 	"strings"
 )

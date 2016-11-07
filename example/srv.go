@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
-	"gitlab.com/Festum/Vibe/wrappers"
+	"github.com/Festum/Vibe/wrappers"
 	// "errors"
 	"net/http"
 )

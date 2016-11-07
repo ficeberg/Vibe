@@ -3,8 +3,8 @@ package wrappers
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"gitlab.com/Festum/Vibe/controllers"
-	"gitlab.com/Festum/Vibe/models"
+	"github.com/Festum/Vibe/controllers"
+	"github.com/Festum/Vibe/models"
 	"net/http"
 )
 

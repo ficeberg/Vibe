@@ -1,11 +1,11 @@
 Vibe
 ===============
 
-A minimalist RESTful API server based on [Echo server framework](https://echo.labstack.com). Aim to reducing developement effers of member and auth functions.
+A minimalist RESTful API server based on [Echo server framework](https://echo.labstack.com) designed for quick start a member system. Aim to reducing development efforts to build-up a new wheel.
 
 Starts
 ----------
-You can start from srv.go. It's a sample of vibe http server endpoint. Command line tool also in the same layer of path, just build and have fun.
+You can start from srv.go in example folder. It's a sample of vibe http server endpoint. Command line tool also can be found in the same path, just build and have fun.
 
 Note
 ----------

@@ -4,7 +4,7 @@ Build = "beta"
 [owner]
 name = "Festum"
 organization = "FEMiUM"
-bio = "FEMiUM.com full powered."
+bio = "What ever here"
 dob = 1985-12-13T09:32:00Z
 
 [database]
@@ -23,7 +23,7 @@ enabled = true
 	dc = "eqdc10"
 	port = "8080"
 	[servers.beta]
-	ip = "7.7.7.3"
+	ip = "IP_ADDR"
 	dc = "eqdc10"
 	port = "3000"
 
@@ -48,7 +48,7 @@ black = [""]
 
 [social]
 	[social.facebook]
-	key = "887001051388939"
+	key = "KEY"
 	secret = "SECRET"
 	[social.gplus]
 	key = ""
